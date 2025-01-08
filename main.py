@@ -14,9 +14,12 @@ from dotenv import load_dotenv
 from nltk.corpus import stopwords
 import nltk
 nltk.download('stopwords')
-load_dotenv()
-os.getenv("GOOGLE_API_KEY")
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+# load_dotenv()
+# os.getenv("GOOGLE_API_KEY")
+# genai.configure(api_key=os.getenv("GOOGLE_API_KEY")) # used for general purpose hosting
+
+
+genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
 def get_pdf_text(pdf_docs):
     text = ""
     for pdf in pdf_docs:
