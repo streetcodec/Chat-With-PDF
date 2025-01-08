@@ -61,4 +61,4 @@ pip install -r requirements.txt
 
 ## To dos :
 1) The highlighting feature can be perfected. During data ingestion, a pdf file is split to passages and the passages' positions are calculated. The passage text and positions are saved in a search index. When a question comes, the indexer returns relevant passages which are used by the LLM to generate final responses. In the meantime, the passages used to generate such responses are highlighted in PDF files. I am not sure if it is possible in Gemini. Maybe in Claude or OpenAI. 
-2) Improvement in UI, removing the sidebar.
+2) Improvement in UI.
