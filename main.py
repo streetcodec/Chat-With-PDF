@@ -109,8 +109,8 @@ def main():
     st.header("Chat with PDF (Open the SideBar to upload)")
 
     user_question = st.text_input("Ask me anything now! But it better be from the syllabus.")
-
-    with st.columns([2, 6, 2]):
+    top_bar = st.columns([2, 6, 2])
+    with top_bar[1]:
         pdf_docs = st.file_uploader("Upload your PDF Files and submit it", accept_multiple_files=True)
         if st.button("Submit"):
             with st.spinner("Learning faster than you ever could :) "):
