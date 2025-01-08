@@ -50,7 +50,7 @@ def get_conversational_chain():
     Answer:
     """
 
-    model = ChatGoogleGenerativeAI(model="gemini-pro", temperature=0.3) # temperature, model and pother attributes can be fiddled with too fine tune the use for specific use case. Maybe the option can be given to user to manipulate as they see fit.
+    model = ChatGoogleGenerativeAI(model="gemini-pro", temperature=0.4) # temperature, model and pother attributes can be fiddled with too fine tune the use for specific use case. Maybe the option can be given to user to manipulate as they see fit.
 
 
     prompt = PromptTemplate(template=prompt_template, input_variables=["context", "question"])
@@ -106,7 +106,7 @@ def user_input(user_question, pdf_docs):
 
 def main():
     st.set_page_config("String Venture OA")
-    st.header("Chat with PDF")
+    st.header("Chat with PDF (Open the SideBar to upload)")
 
     user_question = st.text_input("Ask me anything now! But it better be from the syllabus.")
 
@@ -114,6 +114,7 @@ def main():
         pdf_docs = st.file_uploader("Upload your PDF Files and submit it", accept_multiple_files=True)
         if st.button("Submit"):
             with st.spinner("Learning faster than you ever could :) "):
+                st.write("This is the extracted text.")
                 raw_text = get_pdf_text(pdf_docs)
                 text_chunks = get_text_chunks(raw_text)
                 get_vector_store(text_chunks)
