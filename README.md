@@ -1,7 +1,9 @@
 # Chat-With-PDF
 
 ## Demo :
-
+https://drive.google.com/file/d/1Rbse1tlaqHx4JpjimpPngpk7MhUpCAV9/view?usp=drive_link
+## Hosted at : 
+https://chattin-pdf.streamlit.app/
 
 This is Chat with PDF application, hosted on streamlit, which supports question answers from multiple PDFs.
 
