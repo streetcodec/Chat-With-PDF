@@ -16,9 +16,7 @@ import nltk
 nltk.download('stopwords')
 load_dotenv()
 os.getenv("GOOGLE_API_KEY")
-# st.write(os.getenv("GOOGLE_API_KEY"))
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-
 def get_pdf_text(pdf_docs):
     text = ""
     for pdf in pdf_docs:
@@ -39,16 +37,18 @@ def get_vector_store(text_chunks):
     vector_store.save_local("faiss_index")
 
 def get_conversational_chain():
+    # The prompt which goes to the LLM
     prompt_template = """
-    Answer the question as detailed as possible from the provided context, make sure to provide all the details, if the answer is not in
-    provided context just say, "answer is not available in the context", don't provide the wrong answer\n\n
+    Answer the question in excruciating detail using the provided context, provide all the possible details, point wise. and if the answer is not in
+    provided context say, "Well the question is out the syllabus man!", don't provide the wrong or out of context answer.\n\n
     Context:\n {context}?\n
     Question: \n{question}\n
 
     Answer:
     """
 
-    model = ChatGoogleGenerativeAI(model="gemini-pro", temperature=0.3)
+    model = ChatGoogleGenerativeAI(model="gemini-pro", temperature=0.3) # temperature, model and pother attributes can be fiddled with too fine tune the use for specific use case. Maybe the option can be given to user to manipulate as they see fit.
+
 
     prompt = PromptTemplate(template=prompt_template, input_variables=["context", "question"])
     chain = load_qa_chain(model, chain_type="stuff", prompt=prompt)
@@ -56,29 +56,20 @@ def get_conversational_chain():
     return chain
 
 def highlight_text_in_pdf(pdf_docs, text_to_highlight, output_name="highlighted.pdf"):
-    """
-    Highlights specific text in the PDF and saves the highlighted PDF.
 
-    Parameters:
-    - pdf_path: Path to the original PDF.
-    - text_to_highlight: Text to highlight in the PDF.
-    - output_name: Name of the output highlighted PDF file.
+    text_to_highlight = text_to_highlight.split() # spliting to each individual strings.
+    stop_words = set(stopwords.words('english')) # collects redundant words.
+     
+    filtered_words = [word for word in text_to_highlight if word.lower() not in stop_words and len(word) > 1] # removes stopwords, and single letters.
 
-    Returns:
-    - Highlighted PDF as a binary stream.
-    """
-    #text_to_highlight = text_to_highlight.split()
-    #stop_words = set(stopwords.words('english'))
-    #custom = [ "using"]
-    #filtered_words = [word for word in text_to_highlight if word.lower() not in stop_words not in custom and len(word) > 1]
     pdf_document = fitz.open(stream= pdf_docs.read(), filetype="pdf")
     for page_number in range(len(pdf_document)):
         page = pdf_document[page_number]
-        for text in text_to_highlight: 
+        for text in filtered_words: 
             instances = page.search_for(text)
-            st.write("Highlighting : ", text)
+            #st.write("Highlighting : ", text) # To find what is being highlighted
             for inst in instances:
-                page.add_highlight_annot(inst)
+                page.add_highlight_annot(inst)  # Highlights
             
     
     output_stream = io.BytesIO()
@@ -96,7 +87,8 @@ def user_input(user_question, pdf_docs):
     chain = get_conversational_chain()
     response = chain({"input_documents": docs, "question": user_question}, return_only_outputs=True)
     ResText = response["output_text"]
-    st.write("Reply: ", ResText)
+    st.write("Here you go, ")
+    st.write(ResText) # Final answer to the query 
 
     # Highlight the relevant text in the PDF
     if pdf_docs:
@@ -110,20 +102,19 @@ def user_input(user_question, pdf_docs):
             )
 
 def main():
-    st.set_page_config("Chat PDF")
-    st.header("Chat with PDF using Gemini💁")
+    st.set_page_config("String Venture OA")
+    st.header("Chat with PDF")
 
-    user_question = st.text_input("Ask a Question from the PDF Files")
+    user_question = st.text_input("Ask me anything now! But it better be from the syllabus.")
 
     with st.sidebar:
-        st.title("Menu:")
-        pdf_docs = st.file_uploader("Upload your PDF Files and Click on the Submit & Process Button", accept_multiple_files=True)
-        if st.button("Submit & Process"):
-            with st.spinner("Processing..."):
+        pdf_docs = st.file_uploader("Upload your PDF Files and submit it", accept_multiple_files=True)
+        if st.button("Submit"):
+            with st.spinner("Learning faster than you ever could :) "):
                 raw_text = get_pdf_text(pdf_docs)
                 text_chunks = get_text_chunks(raw_text)
                 get_vector_store(text_chunks)
-                st.success("Done")
+                st.success("Ask me anything!")
 
     if user_question:
         user_input(user_question, pdf_docs)
